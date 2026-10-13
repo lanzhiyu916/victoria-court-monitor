@@ -15,6 +15,8 @@ GitHub Actions 计划在每小时的 03、18、33、48 分运行，由 GitHub �
 
 这个公开仓库使用 GitHub 的标准 Linux runner，不消耗私有仓库的 Actions 免费分钟额度。
 
+GitHub 可能在公开仓库连续 60 天没有活动时停用计划任务。工作流会约每 30 天写入一次 `.heartbeat`，保持仓库活动。
+
 ## 邮件设置
 
 在仓库的 Settings → Secrets and variables → Actions 中添加 secret `QQ_SMTP_PASSWORD`，值为发件 QQ 邮箱的 SMTP 授权码（不是 QQ 登录密码）。发件地址通过 `SMTP_SENDER` 设置；默认流程中使用 `15939488@qq.com`。授权码不要写入仓库文件或聊天。
