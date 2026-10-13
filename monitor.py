@@ -4,6 +4,7 @@ import json
 import os
 import smtplib
 import ssl
+import sys
 import urllib.parse
 import urllib.request
 from datetime import date, datetime, time, timedelta
@@ -120,7 +121,7 @@ def available_courts(day, slots, names, config):
 
 def send_email(config, matches):
     password = os.environ.get("QQ_SMTP_PASSWORD")
-    sender = os.environ.get("SMTP_SENDER", config["recipient_email"])
+    sender = os.environ.get("SMTP_SENDER") or config["recipient_email"]
     if not password:
         raise RuntimeError("缺少 GitHub Actions secret: QQ_SMTP_PASSWORD")
     lines = [
@@ -129,12 +130,16 @@ def send_email(config, matches):
     message = EmailMessage()
     message["From"] = sender
     message["To"] = config["recipient_email"]
-    message["Subject"] = f"Victoria 网球场有 {len(matches)} 个符合条件的空档"
-    message.set_content(
-        "发现可预订的完整 60 分钟室内场地（荷兰当地时间）：\n\n"
-        + "\n".join(lines)
-        + "\n\n请尽快到 https://www.tv-victoria.nl/ 核实并预订。空档可能随时变化。"
-    )
+    if matches:
+        message["Subject"] = f"Victoria 网球场有 {len(matches)} 个符合条件的空档"
+        message.set_content(
+            "发现可预订的完整 60 分钟室内场地（荷兰当地时间）：\n\n"
+            + "\n".join(lines)
+            + "\n\n请尽快到 https://www.tv-victoria.nl/ 核实并预订。空档可能随时变化。"
+        )
+    else:
+        message["Subject"] = "Victoria 网球场监控：测试邮件"
+        message.set_content("这是一封邮件配置测试邮件，不代表发现可预订的场地。")
     with smtplib.SMTP_SSL("smtp.qq.com", 465, context=ssl.create_default_context(), timeout=30) as smtp:
         smtp.login(sender, password)
         smtp.send_message(message)
@@ -142,6 +147,10 @@ def send_email(config, matches):
 
 def main():
     config = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
+    if "--test-email" in sys.argv:
+        send_email(config, [])
+        print("测试邮件已发送。")
+        return
     embed = get_json(f"/embed/{EMBED_ID}")
     if SECTION_ID not in [int(value) for value in embed.get("sectionIds", [])]:
         raise RuntimeError("预约组件的场地区域已改变，需要更新监控配置")
