@@ -124,8 +124,11 @@ def send_email(config, matches):
     sender = os.environ.get("SMTP_SENDER") or config["recipient_email"]
     if not password:
         raise RuntimeError("缺少 GitHub Actions secret: QQ_SMTP_PASSWORD")
+    weekdays = "一二三四五六日"
     lines = [
-        f"{m['day']} {m['start']}–{m['end']}  {m['court']}" for m in matches
+        f"{m['day']}（周{weekdays[date.fromisoformat(m['day']).weekday()]}） "
+        f"{m['start']}–{m['end']}  {m['court']}"
+        for m in matches
     ]
     message = EmailMessage()
     message["From"] = sender
