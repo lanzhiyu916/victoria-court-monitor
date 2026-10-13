@@ -11,7 +11,7 @@
 - `lookahead_days`：向前检查的天数。
 - `recipient_email`：接收通知的邮箱。
 
-GitHub Actions 计划在每小时的 03、18、33、48 分运行，由 GitHub 云端执行，电脑关机也能运行；GitHub 的实际启动时间可能比计划时间晚。监控只通知，不会自动预订或付款。
+GitHub Actions 按荷兰当地时间计划运行：00:00–07:00 每小时在 03 分检查一次；07:00–24:00 每小时在 03、18、33、48 分检查。夏令时由 `Europe/Amsterdam` 时区处理。任务由 GitHub 云端执行，电脑关机也能运行；GitHub 的实际启动时间可能比计划时间晚。监控只通知，不会自动预订或付款。
 
 这个公开仓库使用 GitHub 的标准 Linux runner，不消耗私有仓库的 Actions 免费分钟额度。
 
