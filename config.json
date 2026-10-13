@@ -1,0 +1,8 @@
+{
+  "timezone": "Europe/Amsterdam",
+  "lookahead_days": 14,
+  "duration_minutes": 60,
+  "weekday_start_times": ["19:00", "20:00"],
+  "weekend_window": {"start": "09:00", "end": "12:00", "step_minutes": 30},
+  "recipient_email": "15939488@qq.com"
+}
