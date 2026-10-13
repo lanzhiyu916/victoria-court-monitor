@@ -1,0 +1,40 @@
+name: Check court availability
+
+on:
+  workflow_dispatch:
+    inputs:
+      send_test_email:
+        description: Send a test email before checking availability
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: victoria-court-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Check available courts
+        env:
+          QQ_SMTP_PASSWORD: ${{ secrets.QQ_SMTP_PASSWORD }}
+          SEND_TEST_EMAIL: ${{ inputs.send_test_email }}
+        run: |
+          if [ "$SEND_TEST_EMAIL" = "true" ]; then
+            python monitor.py --test-email
+          fi
+          python monitor.py
+      - name: Save sent alerts
+        run: |
+          git add sent.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Record sent court alerts'
+            git push
+          fi
