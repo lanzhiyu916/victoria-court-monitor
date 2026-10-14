@@ -1,6 +1,6 @@
 # Victoria 室内网球场空档提醒
 
-每 15 分钟检查一次 MovitSport 中 Victoria Tennishal 的公开预约数据。只提醒能预订完整 60 分钟、且符合 `config.json` 时间设置的场地。同一日期、开始时间和场地只发送一次。
+白天每 15 分钟、凌晨每小时检查一次 MovitSport 中 Victoria Tennishal 的公开预约数据。只提醒能预订完整 60 分钟、且符合 `config.json` 时间设置的场地。同一日期、开始时间和场地只发送一次。
 
 ## 修改时间
 
@@ -11,11 +11,11 @@
 - `lookahead_days`：向前检查的天数。
 - `recipient_email`：接收通知的邮箱。
 
-GitHub Actions 按荷兰当地时间计划运行：00:00–07:00 每小时在 03 分检查一次；07:00–24:00 每小时在 03、18、33、48 分检查。夏令时由 `Europe/Amsterdam` 时区处理。任务由 GitHub 云端执行，电脑关机也能运行；GitHub 的实际启动时间可能比计划时间晚。监控只通知，不会自动预订或付款。
+cron-job.org 按 `Europe/Amsterdam` 当地时间触发 GitHub Actions：00:00–07:00 每小时在 03 分检查；07:00–24:00 每小时在 03、18、33、48 分检查。夏令时由该时区处理。`Victoria courts daytime` 与 `Victoria courts night` 两个任务向 `.github/workflows/check.yml` 发送 `workflow_dispatch` 请求。GitHub 自带的 `schedule` 已移除，避免重复扫描。两个云端服务在电脑关机时仍会运行；实际启动可能略晚于计划时间。监控只通知，不会自动预订或付款。
 
-这个公开仓库使用 GitHub 的标准 Linux runner，不消耗私有仓库的 Actions 免费分钟额度。
+cron-job.org 的两个任务使用一个只授权此仓库、具有 Actions 写入权限的 GitHub 细粒度授权码。授权码仅保存在 cron-job.org 的请求标头中，不能写入仓库或聊天。如果授权码被撤销或服务账户停用，需要重新配置。这个公开仓库使用 GitHub 标准 Linux runner，不消耗私有仓库的 Actions 免费分钟额度。
 
-GitHub 可能在公开仓库连续 60 天没有活动时停用计划任务。工作流会约每 30 天写入一次 `.heartbeat`，保持仓库活动。
+工作流约每 30 天写入一次 `.heartbeat`，保留维护活动记录。
 
 ## 邮件设置
 
