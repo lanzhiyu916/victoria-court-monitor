@@ -1,11 +1,6 @@
 name: Check court availability
 
 on:
-  schedule:
-    - cron: '3 0-6 * * *'
-      timezone: 'Europe/Amsterdam'
-    - cron: '3,18,33,48 7-23 * * *'
-      timezone: 'Europe/Amsterdam'
   workflow_dispatch:
     inputs:
       send_test_email:
@@ -36,7 +31,7 @@ jobs:
             python monitor.py --test-email
           fi
           python monitor.py
-      - name: Save sent alerts and keep schedule active
+      - name: Save sent alerts and keep workflow active
         run: |
           if [ ! -f .heartbeat ] || [ $(( $(date -u +%s) - $(date -u -d "$(cat .heartbeat)" +%s) )) -ge 2592000 ]; then
             date -u +%F > .heartbeat
